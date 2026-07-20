@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 import '../core/enums/shipment_status.dart';
 import '../core/enums/verification_status.dart';
 import '../data/api/auth_api.dart';
 import '../data/local/hive_database.dart';
-import '../data/local/hive_boxes.dart';
 import '../data/models/driver_model.dart';
 import '../data/models/shipment_model.dart';
 import '../data/providers/shipment_provider.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/shell/controllers/main_shell_controller.dart';
+import '../routes/app_router.dart';
 import '../routes/app_routes.dart';
 import 'auth_service.dart';
 import 'settings_service.dart';
@@ -46,17 +45,17 @@ class ScreenshotTourService extends GetxService {
     await _shot('03_onboarding_2');
 
     await Get.find<SettingsService>().completeOnboarding();
-    Get.offAllNamed(AppRoutes.language);
+    AppNavigation.go(AppRoutes.language);
     await _waitForRoute(AppRoutes.language, timeoutMs: 5000);
     await Future<void>.delayed(const Duration(milliseconds: 500));
     await _shot('04_language');
 
     await Get.find<SettingsService>().setLocaleCode('en');
-    Get.offAllNamed(AppRoutes.login);
+    AppNavigation.go(AppRoutes.login);
     await Future<void>.delayed(const Duration(milliseconds: 700));
     await _shot('05_login');
 
-    Get.toNamed(AppRoutes.register);
+    AppNavigation.go(AppRoutes.register);
     await Future<void>.delayed(const Duration(milliseconds: 700));
     await _shot('06_register');
 
@@ -67,37 +66,40 @@ class ScreenshotTourService extends GetxService {
       debugPrint('$st');
     }
     await Get.find<SettingsService>().markFabTutorialSeen();
-    Get.offAllNamed(AppRoutes.shell);
+    AppNavigation.go(AppRoutes.shell);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     await _shot('07_home');
 
     try {
       final shell = Get.find<MainShellController>();
       shell.changeTab(1);
+      AppNavigation.go(AppRoutes.shipments);
       await Future<void>.delayed(const Duration(milliseconds: 800));
       await _shot('08_shipments');
 
-      Get.toNamed(AppRoutes.shipmentForm);
+      AppNavigation.push(AppRoutes.shipmentForm);
       await Future<void>.delayed(const Duration(milliseconds: 800));
       await _shot('09_add_shipment');
-      Get.back();
+      AppNavigation.pop();
       await Future<void>.delayed(const Duration(milliseconds: 400));
 
       shell.changeTab(2);
+      AppNavigation.go(AppRoutes.profile);
       await Future<void>.delayed(const Duration(milliseconds: 800));
       await _shot('10_profile');
 
       shell.changeTab(3);
+      AppNavigation.go(AppRoutes.settings);
       await Future<void>.delayed(const Duration(milliseconds: 800));
       await _shot('11_settings');
 
-      Get.toNamed(AppRoutes.language, arguments: 'settings');
+      AppNavigation.push('${AppRoutes.language}?from=settings');
       await Future<void>.delayed(const Duration(milliseconds: 800));
       await _shot('12_language_settings');
-      Get.back();
+      AppNavigation.pop();
       await Future<void>.delayed(const Duration(milliseconds: 400));
 
-      Get.toNamed(AppRoutes.driver);
+      AppNavigation.push(AppRoutes.driver);
       await Future<void>.delayed(const Duration(milliseconds: 900));
       await _shot('13_driver_verification');
     } catch (e, st) {
@@ -180,7 +182,8 @@ class ScreenshotTourService extends GetxService {
   Future<void> _waitForRoute(String route, {required int timeoutMs}) async {
     final end = DateTime.now().add(Duration(milliseconds: timeoutMs));
     while (DateTime.now().isBefore(end)) {
-      if (Get.currentRoute == route) return;
+      final loc = appRouter.routerDelegate.currentConfiguration.uri.path;
+      if (loc == route || loc.startsWith(route)) return;
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
   }

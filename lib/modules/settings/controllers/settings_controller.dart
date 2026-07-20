@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../l10n/app_locales.dart';
 import '../../../l10n/l10n.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/settings_service.dart';
 import '../../../utils/snackbar_helper.dart';
@@ -23,7 +24,7 @@ class SettingsController extends GetxController {
   }
 
   void openLanguage() {
-    Get.toNamed(AppRoutes.language, arguments: 'settings');
+    AppNavigation.push('${AppRoutes.language}?from=settings');
   }
 
   Future<void> showLogoutDialog() async {
@@ -48,7 +49,7 @@ class SettingsController extends GetxController {
     if (confirmed == true) {
       try {
         await _authRepository.logout();
-        Get.offAllNamed(AppRoutes.login);
+        AppNavigation.go(AppRoutes.login);
         SnackbarHelper.infoAfterNav(strings.logoutSuccess);
       } catch (_) {
         SnackbarHelper.error(strings.logoutFailed);
@@ -56,6 +57,7 @@ class SettingsController extends GetxController {
     }
   }
 
-  void navigateToPrivacyPolicy() => Get.toNamed(AppRoutes.legalPrivacy);
-  void navigateToTermsOfUse() => Get.toNamed(AppRoutes.legalTerms);
+  void navigateToPrivacyPolicy() => AppNavigation.push(AppRoutes.legalPrivacy);
+
+  void navigateToTermsOfUse() => AppNavigation.push(AppRoutes.legalTerms);
 }

@@ -28,11 +28,14 @@ abstract class AnalyticsScreens {
     AppRoutes.language: 'language',
     AppRoutes.login: 'login',
     AppRoutes.register: 'register',
-    AppRoutes.shell: 'shell',
     AppRoutes.home: 'home',
+    AppRoutes.profile: 'profile',
+    AppRoutes.settings: 'settings',
     AppRoutes.driver: 'driver',
     AppRoutes.shipments: 'shipments',
     AppRoutes.shipmentForm: 'shipment_form',
+    AppRoutes.legalPrivacy: 'legal_privacy',
+    AppRoutes.legalTerms: 'legal_terms',
   };
 
   static String fromRoute(String? route) {

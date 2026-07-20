@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../constants/analytics_events.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/auth_service.dart';
@@ -65,7 +66,7 @@ class SplashController extends GetxController {
     );
     await performance?.stopTrace(trace);
 
-    Get.offAllNamed(destination);
+    AppNavigation.go(destination);
 
     if (destination == AppRoutes.shell &&
         Get.isRegistered<MessagingService>()) {

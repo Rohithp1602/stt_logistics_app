@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/onboarding_assets.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/settings_service.dart';
+import '../../../widgets/responsive_page.dart';
 
 class OnboardingController extends GetxController {
   final pageIndex = 0.obs;
@@ -22,7 +24,7 @@ class OnboardingController extends GetxController {
     isFinishing.value = true;
     try {
       await Get.find<SettingsService>().completeOnboarding();
-      Get.offAllNamed(AppRoutes.language);
+      AppNavigation.go(AppRoutes.language);
     } catch (_) {
       if (!isClosed) isFinishing.value = false;
       rethrow;
@@ -56,13 +58,15 @@ class OnboardingBinding extends Bindings {
   }
 }
 
-/// Two-page onboarding matching STT brand designs.
+/// Two-page onboarding matching STT brand designs (adaptive for web).
 class OnboardingView extends GetView<OnboardingController> {
   const OnboardingView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final bp = ResponsivePage.breakpointOf(context);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -70,15 +74,30 @@ class OnboardingView extends GetView<OnboardingController> {
           controller: controller.pageController,
           onPageChanged: controller.onPageChanged,
           children: [
-            _OnboardingPageOne(
-              l10n: l10n,
-              onGetStarted: () => controller.next(l10n),
-              onSkip: controller.finish,
-            ),
-            _OnboardingPageTwo(
-              l10n: l10n,
-              onContinue: () => controller.next(l10n),
-            ),
+            if (bp == AppBreakpoint.mobile)
+              _OnboardingPageOneMobile(
+                l10n: l10n,
+                onGetStarted: () => controller.next(l10n),
+                onSkip: controller.finish,
+              )
+            else
+              _OnboardingPageOneWide(
+                l10n: l10n,
+                onGetStarted: () => controller.next(l10n),
+                onSkip: controller.finish,
+                desktop: bp == AppBreakpoint.desktop,
+              ),
+            if (bp == AppBreakpoint.mobile)
+              _OnboardingPageTwoMobile(
+                l10n: l10n,
+                onContinue: () => controller.next(l10n),
+              )
+            else
+              _OnboardingPageTwoWide(
+                l10n: l10n,
+                onContinue: () => controller.next(l10n),
+                desktop: bp == AppBreakpoint.desktop,
+              ),
           ],
         ),
       ),
@@ -86,8 +105,296 @@ class OnboardingView extends GetView<OnboardingController> {
   }
 }
 
-class _OnboardingPageOne extends StatelessWidget {
-  const _OnboardingPageOne({
+class _OnboardingPageOneWide extends StatelessWidget {
+  const _OnboardingPageOneWide({
+    required this.l10n,
+    required this.onGetStarted,
+    required this.onSkip,
+    required this.desktop,
+  });
+
+  final AppLocalizations l10n;
+  final VoidCallback onGetStarted;
+  final VoidCallback onSkip;
+  final bool desktop;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: Row(
+        children: [
+          Expanded(
+            flex: desktop ? 6 : 5,
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFDCDCDC),
+                    Color(0xFFF2F2F2),
+                    Color(0xFFFFFFFF),
+                  ],
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(desktop ? 48 : 32),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Image.asset(
+                        OnboardingAssets.logo,
+                        height: 52,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const SizedBox(height: 52),
+                      ),
+                    ),
+                    Expanded(
+                      child: Image.asset(
+                        OnboardingAssets.heroTruck,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: desktop ? 5 : 5,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: desktop ? 56 : 36,
+                vertical: 40,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${l10n.onboardingTitle1Line1}\n',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: desktop ? 42 : 34,
+                            fontWeight: FontWeight.w800,
+                            height: 1.15,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                        TextSpan(
+                          text: l10n.onboardingTitle1Line2,
+                          style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: desktop ? 42 : 34,
+                            fontWeight: FontWeight.w800,
+                            height: 1.15,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.onboardingSubtitle1,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.88),
+                      fontSize: desktop ? 17 : 15,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+                  const Row(
+                    children: [
+                      _Dot(active: true),
+                      SizedBox(width: 8),
+                      _Dot(active: false),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: desktop ? 280 : double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: onGetStarted,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.getStarted,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: onSkip,
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFA8A8A8),
+                    ),
+                    child: Text(l10n.skip),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OnboardingPageTwoWide extends StatelessWidget {
+  const _OnboardingPageTwoWide({
+    required this.l10n,
+    required this.onContinue,
+    required this.desktop,
+  });
+
+  final AppLocalizations l10n;
+  final VoidCallback onContinue;
+  final bool desktop;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: const Color(0xFF050505),
+      child: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: desktop ? 1100 : 860),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: desktop ? 40 : 28,
+                vertical: 32,
+              ),
+              child: Column(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${l10n.onboardingTitle2Line1}\n',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: desktop ? 36 : 30,
+                            fontWeight: FontWeight.w800,
+                            height: 1.2,
+                          ),
+                        ),
+                        TextSpan(
+                          text: l10n.onboardingTitle2Line2,
+                          style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: desktop ? 36 : 30,
+                            fontWeight: FontWeight.w800,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.onboardingSubtitle2,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 15,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: OnboardingAssets.iconVerification,
+                            title: l10n.featureDriverTitle,
+                            body: l10n.featureDriverBody,
+                            tall: true,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: OnboardingAssets.iconTruck,
+                            title: l10n.featureShipmentTitle,
+                            body: l10n.featureShipmentBody,
+                            tall: true,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: OnboardingAssets.iconRealtime,
+                            title: l10n.featureRealtimeTitle,
+                            body: l10n.featureRealtimeBody,
+                            tall: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _Dot(active: false),
+                      SizedBox(width: 8),
+                      _Dot(active: true),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: desktop ? 280 : 320,
+                    height: 54,
+                    child: ElevatedButton(
+                      onPressed: onContinue,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: Text(
+                        l10n.continueLabel,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OnboardingPageOneMobile extends StatelessWidget {
+  const _OnboardingPageOneMobile({
     required this.l10n,
     required this.onGetStarted,
     required this.onSkip,
@@ -102,7 +409,6 @@ class _OnboardingPageOne extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final topInset = MediaQuery.paddingOf(context).top;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    // Hero circle sits in the upper half; copy lives fully on black.
     final heroBottom = size.height * 0.58;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -111,7 +417,6 @@ class _OnboardingPageOne extends StatelessWidget {
         color: Colors.black,
         child: Stack(
           children: [
-            // Light wash behind logo + upper half of the circular hero.
             Positioned(
               top: 0,
               left: 0,
@@ -131,8 +436,6 @@ class _OnboardingPageOne extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Circular hero (asset already has transparent corners).
             Positioned(
               top: topInset + 4,
               left: 0,
@@ -158,8 +461,6 @@ class _OnboardingPageOne extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Bottom copy + actions — left-aligned text, centered controls.
             Positioned(
               left: 0,
               right: 0,
@@ -195,16 +496,13 @@ class _OnboardingPageOne extends StatelessWidget {
                           ),
                         ],
                       ),
-                      textAlign: TextAlign.left,
                     ),
                     const SizedBox(height: 12),
                     Text(
                       l10n.onboardingSubtitle1,
-                      textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
-                        fontWeight: FontWeight.w400,
                         height: 1.4,
                       ),
                     ),
@@ -248,18 +546,8 @@ class _OnboardingPageOne extends StatelessWidget {
                         onPressed: onSkip,
                         style: TextButton.styleFrom(
                           foregroundColor: const Color(0xFFA8A8A8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
                         ),
-                        child: Text(
-                          l10n.skip,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: Text(l10n.skip),
                       ),
                     ),
                   ],
@@ -273,8 +561,8 @@ class _OnboardingPageOne extends StatelessWidget {
   }
 }
 
-class _OnboardingPageTwo extends StatelessWidget {
-  const _OnboardingPageTwo({
+class _OnboardingPageTwoMobile extends StatelessWidget {
+  const _OnboardingPageTwoMobile({
     required this.l10n,
     required this.onContinue,
   });
@@ -324,7 +612,6 @@ class _OnboardingPageTwo extends StatelessWidget {
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 height: 1.2,
-                                letterSpacing: -0.2,
                               ),
                             ),
                             TextSpan(
@@ -334,7 +621,6 @@ class _OnboardingPageTwo extends StatelessWidget {
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
                                 height: 1.2,
-                                letterSpacing: -0.2,
                               ),
                             ),
                           ],
@@ -349,7 +635,6 @@ class _OnboardingPageTwo extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.92),
                           fontSize: 13.5,
                           height: 1.45,
-                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
@@ -438,61 +723,100 @@ class _FeatureCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.body,
+    this.tall = false,
   });
 
   final String icon;
   final String title;
   final String body;
+  final bool tall;
 
   @override
   Widget build(BuildContext context) {
+    final content = tall
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.asset(
+                  icon,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                body,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13.5,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          )
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.asset(
+                  icon,
+                  width: 54,
+                  height: 54,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15.5,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      body,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
+      width: tall ? double.infinity : null,
+      padding: EdgeInsets.fromLTRB(tall ? 20 : 14, tall ? 20 : 14, 16, tall ? 20 : 14),
       decoration: BoxDecoration(
         color: const Color(0xFF0A111A),
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Image.asset(
-              icon,
-              width: 54,
-              height: 54,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.accent,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15.5,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12.5,
-                    height: 1.35,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }
@@ -510,10 +834,8 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color color;
     if (onAccent) {
-      // On red footer: active = black, inactive = white (matches mock)
       color = active ? Colors.black : Colors.white;
     } else {
-      // On black footer: active = red, inactive = white
       color = active ? AppColors.accent : Colors.white;
     }
 
@@ -529,7 +851,6 @@ class _Dot extends StatelessWidget {
   }
 }
 
-/// Concave upward wave for the red page-2 footer.
 class _TopConcaveWaveClipper extends CustomClipper<Path> {
   const _TopConcaveWaveClipper();
 
@@ -538,12 +859,7 @@ class _TopConcaveWaveClipper extends CustomClipper<Path> {
     final path = Path();
     final dip = math.min(48.0, size.height * 0.36);
     path.moveTo(0, dip);
-    path.quadraticBezierTo(
-      size.width * 0.5,
-      4,
-      size.width,
-      dip,
-    );
+    path.quadraticBezierTo(size.width * 0.5, 4, size.width, dip);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();

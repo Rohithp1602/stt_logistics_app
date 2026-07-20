@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,7 +5,9 @@ import '../../../constants/app_colors.dart';
 import '../../../core/enums/verification_status.dart';
 import '../../../core/validators/form_validators.dart';
 import '../../../l10n/l10n.dart';
+import '../../../utils/photo_storage.dart';
 import '../../../widgets/app_text_field.dart';
+import '../../../widgets/responsive_page.dart';
 import '../controllers/profile_controller.dart';
 
 /// Profile screen for editing user and driver information.
@@ -63,13 +63,15 @@ class ProfileView extends GetView<ProfileController> {
           );
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        return ResponsivePage(
+          maxWidth: 640,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               // Profile photo section
               Center(
                 child: GestureDetector(
@@ -88,21 +90,15 @@ class ProfileView extends GetView<ProfileController> {
                           ),
                         ),
                         child: ClipOval(
-                          child: controller.photoPath.value != null
-                              ? Image.file(
-                                  File(controller.photoPath.value!),
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => const Icon(
-                                    Icons.person,
-                                    size: 40,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: AppColors.textSecondary,
-                                ),
+                          child: PhotoImage(
+                            photoRef: controller.photoPath.value,
+                            fit: BoxFit.cover,
+                            placeholder: const Icon(
+                              Icons.person,
+                              size: 40,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
                       Positioned(
@@ -287,6 +283,7 @@ class ProfileView extends GetView<ProfileController> {
               const SizedBox(height: 32),
               ],
             ),
+          ),
           ),
         );
       }),

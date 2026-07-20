@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../l10n/l10n.dart';
 import '../../../widgets/empty_state.dart';
 import '../../../widgets/loading_overlay.dart';
+import '../../../widgets/responsive_page.dart';
 import '../controllers/shipment_controller.dart';
 import '../widgets/shipment_tile.dart';
 
@@ -30,20 +31,23 @@ class ShipmentListView extends GetView<ShipmentController> {
           );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.shipments.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            final shipment = controller.shipments[index];
-            return ShipmentTile(
-              shipment: shipment,
-              onTap: () => controller.openEditForm(shipment),
-              onDelete: () => controller.deleteShipment(shipment),
-              onStatusChanged: (status) =>
-                  controller.updateStatus(shipment, status),
-            );
-          },
+        return ResponsivePage(
+          maxWidth: 900,
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.shipments.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final shipment = controller.shipments[index];
+              return ShipmentTile(
+                shipment: shipment,
+                onTap: () => controller.openEditForm(shipment),
+                onDelete: () => controller.deleteShipment(shipment),
+                onStatusChanged: (status) =>
+                    controller.updateStatus(shipment, status),
+              );
+            },
+          ),
         );
       }),
     );

@@ -1,19 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
 
 import '../../../constants/analytics_events.dart';
 import '../../../core/errors/failures.dart';
 import '../../../core/validators/form_validators.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../l10n/l10n.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/performance_service.dart';
+import '../../../utils/photo_storage.dart';
 import '../../../utils/snackbar_helper.dart';
 
 /// Handles registration form state and user creation flow.
@@ -37,17 +35,14 @@ class RegisterController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
 
-  /// Toggles password field visibility.
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
   }
 
-  /// Toggles confirm password field visibility.
   void toggleConfirmPasswordVisibility() {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
   }
 
-  /// Shows camera/gallery picker and copies selected image to app directory.
   Future<void> pickPhoto() async {
     final strings = l10n;
     final source = await Get.bottomSheet<ImageSource>(
@@ -90,30 +85,13 @@ class RegisterController extends GetxController {
       );
 
       if (image != null) {
-        photoPath.value = await _saveAvatar(image);
+        photoPath.value = await PhotoStorage.saveFromXFile(image);
       }
     } catch (e) {
       SnackbarHelper.error('Failed to select photo: ${e.toString()}');
     }
   }
 
-  Future<String> _saveAvatar(XFile image) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final avatarsDir = Directory(path.join(appDir.path, 'avatars'));
-    if (!await avatarsDir.exists()) {
-      await avatarsDir.create(recursive: true);
-    }
-
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final extension = path.extension(image.path);
-    final fileName = 'avatar_$timestamp$extension';
-    final destinationPath = path.join(avatarsDir.path, fileName);
-
-    await File(image.path).copy(destinationPath);
-    return destinationPath;
-  }
-
-  /// Attempts user registration. Caller must validate the form first.
   Future<void> register() async {
     isLoading.value = true;
 
@@ -137,7 +115,7 @@ class RegisterController extends GetxController {
       );
       await performance?.stopTrace(trace);
       await analytics?.logEvent(AnalyticsEvents.flowRegisterSuccess);
-      Get.offAllNamed(AppRoutes.shell);
+      AppNavigation.go(AppRoutes.shell);
       SnackbarHelper.successAfterNav(l10n.registerSuccess);
     } on AuthFailure catch (failure) {
       await performance?.stopTrace(trace);
@@ -157,26 +135,19 @@ class RegisterController extends GetxController {
     }
   }
 
-  /// Full name field validator wired to [FormValidators.required].
   String? validateFullName(String? value) => FormValidators.required(value);
 
-  /// Email field validator wired to [FormValidators.email].
   String? validateEmail(String? value) => FormValidators.email(value);
 
-  /// Phone field validator wired to [FormValidators.phone].
   String? validatePhone(String? value) => FormValidators.phone(value);
 
-  /// Password field validator wired to [FormValidators.password].
   String? validatePassword(String? value) => FormValidators.password(value);
 
-  /// Confirm password field validator ensuring it matches the password.
   String? validateConfirmPassword(String? value) =>
       FormValidators.confirmPassword(passwordController.text, value);
 
-  /// CDL field validator wired to [FormValidators.required].
   String? validateCdl(String? value) => FormValidators.required(value);
 
-  /// Hub field validator wired to [FormValidators.required].
   String? validateHub(String? value) => FormValidators.required(value);
 
   @override

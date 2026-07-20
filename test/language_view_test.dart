@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:stt_logistics_app/data/api/auth_api.dart';
 import 'package:stt_logistics_app/data/local/hive_boxes.dart';
 import 'package:stt_logistics_app/l10n/app_localizations.dart';
+import 'package:stt_logistics_app/l10n/app_localizations_es.dart';
 import 'package:stt_logistics_app/modules/language/views/language_view.dart';
 import 'package:stt_logistics_app/services/auth_service.dart';
 import 'package:stt_logistics_app/services/settings_service.dart';
@@ -32,7 +33,7 @@ void main() {
   });
 
   tearDown(() async {
-    await Hive.deleteFromDisk();
+    await Hive.close();
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
     Get.reset();
   });
@@ -40,7 +41,10 @@ void main() {
   testWidgets('language view builds and lists English', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
     await tester.pumpWidget(
       GetMaterialApp(
@@ -60,5 +64,91 @@ void main() {
     expect(find.text('Choose your language'), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
     expect(find.text('Continue'), findsOneWidget);
+  });
+
+  testWidgets('Spanish locale strings render on language screen', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.runAsync(() async {
+      await Get.find<SettingsService>().setLocaleCode('es');
+    });
+
+    await tester.pumpWidget(
+      GetMaterialApp(
+        locale: const Locale('es'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const LanguageView(),
+      ),
+    );
+    await tester.pump();
+
+    final es = AppLocalizationsEs();
+    expect(find.text(es.chooseLanguage), findsOneWidget);
+    expect(find.text(es.continueLabel), findsOneWidget);
+  });
+
+  testWidgets('language grid layout used on desktop width', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      GetMaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const LanguageView(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(GridView), findsOneWidget);
+    expect(find.text('English'), findsOneWidget);
+  });
+
+  testWidgets('language list layout used on mobile width', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      GetMaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const LanguageView(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(ListView), findsOneWidget);
+    expect(find.byType(GridView), findsNothing);
   });
 }

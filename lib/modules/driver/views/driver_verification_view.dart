@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../../widgets/loading_overlay.dart';
+import '../../../widgets/responsive_page.dart';
 import '../controllers/driver_controller.dart';
 import '../widgets/driver_verification_card.dart';
 
@@ -25,24 +26,27 @@ class DriverVerificationView extends GetView<DriverController> {
           return Center(child: Text(strings.driverProfileUnavailable));
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            const Text(
-              'Front',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            DriverVerificationCard(driver: driver),
-            const SizedBox(height: 20),
-            const Text(
-              'Back',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            DriverLicenseBackCard(driver: driver),
-            const SizedBox(height: 16),
-          ],
+        return ResponsivePage(
+          maxWidth: 560,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const Text(
+                'Front',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              DriverVerificationCard(driver: driver),
+              const SizedBox(height: 20),
+              const Text(
+                'Back',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              DriverLicenseBackCard(driver: driver),
+              const SizedBox(height: 16),
+            ],
+          ),
         );
       }),
     );

@@ -9,6 +9,7 @@ import '../../../core/validators/form_validators.dart';
 import '../../../data/models/shipment_model.dart';
 import '../../../data/repositories/shipment_repository.dart';
 import '../../../l10n/l10n.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/auth_service.dart';
@@ -60,7 +61,7 @@ class ShipmentController extends GetxController {
         parameters: const <String, Object>{'mode': 'create'},
       );
     }
-    Get.toNamed(AppRoutes.shipmentForm);
+    AppNavigation.push(AppRoutes.shipmentForm);
   }
 
   void openEditForm(ShipmentModel shipment) {
@@ -75,7 +76,7 @@ class ShipmentController extends GetxController {
         parameters: const <String, Object>{'mode': 'edit'},
       );
     }
-    Get.toNamed(AppRoutes.shipmentForm);
+    AppNavigation.push(AppRoutes.shipmentForm);
   }
 
   Future<void> saveShipment() async {
@@ -128,8 +129,8 @@ class ShipmentController extends GetxController {
         shipments.assignAll(items);
       }
 
-      // Pop before snackbar — Get.back() would otherwise dismiss the snackbar.
-      Get.back();
+      // Pop before snackbar — popping would otherwise dismiss the snackbar.
+      AppNavigation.pop();
       _goToShipmentsTab();
       SnackbarHelper.successAfterNav(
         isCreate ? l10n.shipmentAdded : l10n.shipmentUpdated,
@@ -145,6 +146,7 @@ class ShipmentController extends GetxController {
     if (Get.isRegistered<MainShellController>()) {
       Get.find<MainShellController>().changeTab(1);
     }
+    AppNavigation.go(AppRoutes.shipments);
   }
 
   Future<void> deleteShipment(ShipmentModel shipment) async {

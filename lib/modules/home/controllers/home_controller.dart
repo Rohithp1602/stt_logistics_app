@@ -7,6 +7,7 @@ import '../../../core/errors/failures.dart';
 import '../../../data/models/driver_model.dart';
 import '../../../data/models/shipment_model.dart';
 import '../../../data/providers/driver_provider.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/auth_service.dart';
@@ -79,7 +80,7 @@ class HomeController extends GetxController {
     if (Get.isRegistered<AnalyticsService>()) {
       Get.find<AnalyticsService>().logEvent(AnalyticsEvents.featureOpenDriver);
     }
-    Get.toNamed(AppRoutes.driver);
+    AppNavigation.push(AppRoutes.driver);
   }
 
   void openShipments() {
@@ -87,6 +88,9 @@ class HomeController extends GetxController {
       Get.find<AnalyticsService>()
           .logEvent(AnalyticsEvents.featureOpenShipments);
     }
-    Get.find<MainShellController>().changeTab(1);
+    if (Get.isRegistered<MainShellController>()) {
+      Get.find<MainShellController>().changeTab(1);
+    }
+    AppNavigation.go(AppRoutes.shipments);
   }
 }

@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
@@ -21,20 +23,31 @@ import 'services/settings_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  final crashlytics = Get.put(CrashlyticsService(), permanent: true);
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
+  final crashlytics = Get.put(
+    CrashlyticsService(enabled: !kIsWeb),
+    permanent: true,
+  );
   await crashlytics.init();
   Get.put(AnalyticsService(), permanent: true);
   Get.put(PerformanceService(), permanent: true);
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   await HiveDatabase.init();
 
@@ -42,13 +55,16 @@ Future<void> main() async {
   Get.put<SettingsService>(SettingsService(), permanent: true);
   Get.put<AuthService>(AuthService(), permanent: true);
 
-  await Get.putAsync<MessagingService>(
-    () => MessagingService().init(),
-    permanent: true,
-  );
+  try {
+    await Get.putAsync<MessagingService>(
+      () => MessagingService().init(),
+      permanent: true,
+    );
+  } catch (e, st) {
+    debugPrint('MessagingService init skipped: $e\n$st');
+  }
 
   if (ScreenshotTourService.enabled) {
-    // Fresh first-run for onboarding screenshots.
     final settings = Get.find<SettingsService>();
     await Hive.box(HiveBoxes.settings).clear();
     settings.onInit();

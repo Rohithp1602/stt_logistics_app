@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stt_logistics_app/app.dart';
 import 'package:stt_logistics_app/data/api/auth_api.dart';
 import 'package:stt_logistics_app/data/local/hive_boxes.dart';
+import 'package:stt_logistics_app/routes/app_router.dart';
 import 'package:stt_logistics_app/routes/app_routes.dart';
 import 'package:stt_logistics_app/services/analytics_service.dart';
 import 'package:stt_logistics_app/services/auth_service.dart';
@@ -76,7 +77,7 @@ void main() {
       await tester.tap(find.text('Register now'));
       await tester.pumpAndSettle();
 
-      expect(Get.currentRoute, AppRoutes.register);
+      expect(appRouter.state.uri.path, AppRoutes.register);
     });
 
     testWidgets('Can navigate directly to login route',
@@ -84,7 +85,7 @@ void main() {
       await tester.pumpWidget(const SttApp());
       await tester.pumpAndSettle();
 
-      Get.offAllNamed(AppRoutes.login);
+      AppNavigation.go(AppRoutes.login);
       await tester.pumpAndSettle();
 
       expect(find.text('Register now'), findsOneWidget);

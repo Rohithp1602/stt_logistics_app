@@ -5,6 +5,7 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/settings_service.dart';
+import '../../../widgets/responsive_page.dart';
 import '../controllers/settings_controller.dart';
 
 class SettingsView extends GetView<SettingsController> {
@@ -22,9 +23,11 @@ class SettingsView extends GetView<SettingsController> {
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: ResponsivePage(
+        maxWidth: 720,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
           _card(
             title: l10n.notifications,
             child: Obx(
@@ -114,6 +117,7 @@ class SettingsView extends GetView<SettingsController> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

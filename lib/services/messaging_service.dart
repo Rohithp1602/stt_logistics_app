@@ -8,7 +8,7 @@ import 'package:hive/hive.dart';
 
 import '../constants/messaging_constants.dart';
 import '../data/local/hive_boxes.dart';
-import '../routes/app_routes.dart';
+import '../routes/app_router.dart';
 import 'auth_service.dart';
 import 'settings_service.dart';
 
@@ -244,11 +244,7 @@ class MessagingService extends GetxService {
 
   void _navigateToRoute(String route) {
     try {
-      if (route == AppRoutes.shell) {
-        Get.offAllNamed(AppRoutes.shell);
-      } else {
-        Get.toNamed(route);
-      }
+      AppNavigation.go(route);
     } catch (e, st) {
       debugPrint('MessagingService navigate failed: $e\n$st');
     }

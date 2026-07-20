@@ -10,6 +10,7 @@ import 'package:stt_logistics_app/constants/app_strings.dart';
 import 'package:stt_logistics_app/data/api/auth_api.dart';
 import 'package:stt_logistics_app/data/local/hive_boxes.dart';
 import 'package:stt_logistics_app/modules/splash/controllers/splash_controller.dart';
+import 'package:stt_logistics_app/routes/app_router.dart';
 import 'package:stt_logistics_app/routes/app_routes.dart';
 import 'package:stt_logistics_app/services/analytics_service.dart';
 import 'package:stt_logistics_app/services/auth_service.dart';
@@ -69,7 +70,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(Get.currentRoute, AppRoutes.login);
+    expect(appRouter.state.uri.path, AppRoutes.login);
     expect(find.text(AppStrings.loginButton), findsWidgets);
     expect(find.text(AppStrings.emailHint), findsOneWidget);
   });

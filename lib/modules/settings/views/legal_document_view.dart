@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../../constants/app_colors.dart';
+import '../../../routes/app_router.dart';
 
 /// Generic legal document view that displays title and content.
 /// 
@@ -43,7 +43,7 @@ class LegalDocumentView extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Get.back(),
+                onPressed: () => AppNavigation.pop(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

@@ -1,1 +1,74 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"sst-logistics-app","appId":"1:10162701933:android:2aaff051401f560018a164","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"sst-logistics-app","appId":"1:10162701933:ios:7ab2925fc567dbb218a164","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"sst-logistics-app","configurations":{"android":"1:10162701933:android:2aaff051401f560018a164","ios":"1:10162701933:ios:7ab2925fc567dbb218a164","web":"1:10162701933:web:93a35b4685d8e82618a164"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "sst-logistics-app",
+          "appId": "1:10162701933:android:2aaff051401f560018a164",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "sst-logistics-app",
+          "appId": "1:10162701933:ios:7ab2925fc567dbb218a164",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "sst-logistics-app",
+          "configurations": {
+            "android": "1:10162701933:android:2aaff051401f560018a164",
+            "ios": "1:10162701933:ios:7ab2925fc567dbb218a164",
+            "web": "1:10162701933:web:93a35b4685d8e82618a164"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/flutter_bootstrap.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|wasm|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,124 +1,88 @@
-# STT Logistics App
+# STT Logistics App (Web)
 
-Professional mobile client for **STT Logistics Group** drivers: first-run onboarding, multi-language UI, account access, CDL-style verification, and shipment management.
+Web client for **STT Logistics Group** drivers: first-run onboarding, multi-language UI, account access, CDL-style verification, and shipment management.
 
-Built with **Flutter** and **GetX**. Business data is stored on-device with **Hive**. **Firebase** provides analytics, crash reporting, performance monitoring, and push notifications.
+**Branch:** `web` — Flutter **Web only**.
+
+Built with **Flutter Web**, **GoRouter** (URLs / back / refresh), and **GetX** (state / DI). Business data is stored in the browser with **Hive** (IndexedDB). **Firebase** provides Analytics and **Hosting**.
 
 | | |
 |---|---|
 | **Version** | 1.0.0+1 |
-| **Package ID** | `com.sttlogistics.group` |
-| **Platforms** | iOS · Android |
-| **Orientation** | Portrait |
-
----
-
-## Screenshots (iOS)
-
-Captured from the iOS Simulator build.
-
-### First-run & authentication
-
-| Onboarding | Language | Sign in | Register |
-|:---:|:---:|:---:|:---:|
-| ![Onboarding](docs/screenshots/03_onboarding_2.png) | ![Language](docs/screenshots/04_language.png) | ![Login](docs/screenshots/05_login.png) | ![Register](docs/screenshots/06_register.png) |
-
-### Main app
-
-| Home | Shipments | Add shipment |
-|:---:|:---:|:---:|
-| ![Home](docs/screenshots/07_home.png) | ![Shipments](docs/screenshots/08_shipments.png) | ![Add](docs/screenshots/09_add_shipment.png) |
-
-| Profile | Settings | Language (Settings) |
-|:---:|:---:|:---:|
-| ![Profile](docs/screenshots/10_profile.png) | ![Settings](docs/screenshots/11_settings.png) | ![Lang](docs/screenshots/12_language_settings.png) |
-
-| Driver verification |
-|:---:|
-| ![Driver](docs/screenshots/13_driver_verification.png) |
-
-> Re-capture locally: `./tool/capture_ios_screenshots.sh`
+| **Platform** | Web |
+| **Live** | https://sst-logistics-app.web.app |
+| **Firebase project** | `sst-logistics-app` |
 
 ---
 
 ## Features
 
-### Onboarding & language (first launch only)
-- Two-page branded onboarding (shown once per install)
+### Onboarding & language (first launch)
+- Two-page branded onboarding (once per browser profile)
 - Language selection before login
-- Preference remembered in Hive (`onboarding_completed`, `language_selected`)
+- Preferences in Hive settings box
 
 ### Authentication
-- Email / password registration and sign-in
+- Email / password registration and sign-in (local mock API)
 - Passwords stored as hashes
-- Session restored after app restart
-- Optional profile photo on register
+- Session restored after refresh
+- Optional profile photo (bytes stored in Hive)
 
-### Home
-- Personalized welcome header
-- Shipment overview chart (total, pending, in transit, delivered)
-- Driver verification card shortcut
+### Navigation (responsive)
+- **&lt; 900px:** bottom nav + center “+”
+- **≥ 900px:** left sidebar + “New shipment”
+- Shell tab URLs: `/app/home`, `/app/shipments`, `/app/profile`, `/app/settings`
 
-### Shipments
-- Create, edit, update status, delete
-- Per-user isolation (users only see their own records)
-- Data survives cold start
-- Center **+** FAB opens the create form
-- One-time FAB coach-mark tutorial on first shell visit
+### Home / Shipments / Driver / Profile
+- Shipment overview + driver verification card
+- Full shipment CRUD with validation
+- License-style verification card (Verified / Pending / Rejected)
+- Edit profile (name, phone, CDL, hub, photo)
 
-### Driver verification
-- License-style card: name, CDL, hub, photo, STT status (Verified / Pending / Rejected)
-
-### Profile & settings
-- Edit name, phone, CDL, hub, photo
-- Push notification toggle
-- Change language anytime
-- Privacy Policy & Terms of Use
-- Logout
-
-### Localization (15 locales)
-English, Spanish, Mexican Spanish, German, Hindi, Gujarati, Japanese, French, Chinese, Korean, Vietnamese, Portuguese, Italian, Arabic, Filipino
-
-UI copy uses Flutter `gen-l10n` (`lib/l10n/`).
+### Localization
+15 locales via Flutter `gen-l10n` (`lib/l10n/`).
 
 ---
 
-## Firebase services
+## Firebase on web
 
-| Service | What it does in this app |
-|---------|--------------------------|
-| **Firebase Core** | Boots the Firebase app used by all other SDKs |
-| **Analytics** | Screen views, funnel events (splash, auth, shipments), optional user id |
-| **Crashlytics** | Crash / non-fatal reporting; tagged with user email when signed in |
-| **Performance** | Traces key flows (e.g. splash bootstrap) |
-| **Cloud Messaging (FCM)** | Push notifications; route-style deep links when a message includes a destination |
-| **Local notifications** | Shows FCM alerts while the app is in the foreground |
+| Service | Role |
+|---------|------|
+| **Firebase Core** | App bootstrap |
+| **Analytics** | Funnel / feature events |
+| **Hosting** | Serves `build/web` with SPA rewrite |
+| **Crashlytics / FCM** | Soft-skipped / limited on web |
 
-Notifications can be disabled in **Settings**; `MessagingService` respects that flag.
-
-> Auth and shipment **data** are local (Hive), not Firebase Auth / Firestore. Firebase here is for observability and messaging.
+Auth and shipment **data** remain local (Hive), not Firestore.
 
 ---
 
 ## Run locally
 
-Requires Flutter **3.12+** and a configured Firebase project (`lib/firebase_options.dart`).
+Requires Flutter **3.12+**.
 
 ```bash
 flutter pub get
-flutter run
+flutter run -d chrome
 ```
 
 ```bash
 flutter analyze
 flutter test
+flutter build web --release
 ```
 
-Capture README screenshots (iOS Simulator):
+---
+
+## Deploy (Firebase Hosting)
 
 ```bash
-./tool/capture_ios_screenshots.sh
+flutter build web --release
+firebase use sst-logistics-app
+firebase deploy --only hosting --project sst-logistics-app
 ```
+
+Hosting serves `build/web` and rewrites all paths to `/index.html` so GoRouter deep links work on refresh.
 
 ---
 
@@ -126,22 +90,18 @@ Capture README screenshots (iOS Simulator):
 
 ```text
 lib/
-  main.dart              Bootstrap (Firebase, Hive, services)
-  app.dart               GetMaterialApp + localization delegates
-  l10n/                  ARB files + generated AppLocalizations
-  constants/             Colors, assets, analytics event names
-  core/                  Validators, enums, failures, security
-  data/                  Models, Hive API, providers, repositories
-  modules/               Feature UI (auth, onboarding, shell, home, …)
-  routes/                AppRoutes / AppPages
-  services/              Auth, settings, analytics, messaging, …
-  theme/                 Light theme
-  widgets/               Shared UI (nav, fields, FAB tutorial, …)
+  main.dart              Web-safe bootstrap (Firebase, Hive, services)
+  app.dart               GetMaterialApp.router + localization
+  routes/app_router.dart GoRouter config + AppNavigation helpers
+  routes/app_routes.dart Path constants
+  modules/               Feature UI (auth, shell, home, …)
+  data/                  Models, Hive API, repositories
+  utils/photo_storage.dart  Base64 photo refs for Hive
+  widgets/responsive_page.dart  Max-width + sidebar
 docs/
-  screenshots/           iOS captures used above
-  ARCHITECTURE.md        Layering notes
-  CHANGELOG.md           Release notes
-  STT_Logistics_App_Overview.pdf
+  ARCHITECTURE.md
+  superpowers/specs/…    Web design spec
+  superpowers/plans/…    Implementation plan
 ```
 
 ---
@@ -149,7 +109,7 @@ docs/
 ## Architecture (short)
 
 ```text
-View → Controller → Repository → Provider / AuthApi → Hive
+Browser URL → GoRouter → Views → GetX Controllers → Repository → Hive
 ```
 
 | Hive box | Contents |
@@ -157,19 +117,28 @@ View → Controller → Repository → Provider / AuthApi → Hive
 | `users` | Accounts |
 | `drivers` | CDL / hub / verification |
 | `session` | Active login |
-| `settings` | Notifications, locale, first-run flags |
+| `settings` | Locale, first-run flags, notifications |
 | `shipments` | Per-user shipment records |
 
-Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)  
-Client PDF: [docs/STT_Logistics_App_Overview.pdf](docs/STT_Logistics_App_Overview.pdf)
+Photos are stored as `b64:…` strings in user/driver records (not filesystem paths).
+
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ---
 
-## Handover notes
+## Assumptions
 
-- Swap `AuthApi` / shipment providers when a backend is ready; screens can stay.
-- Brand assets: `assets/images/` and `assets/images/onboarding/`
-- Portrait only
+- This branch targets **web only** (mobile native is a separate branch).
+- Authentication is **local mock** (Hive), suitable for the challenge / demo.
+- Push notifications are not a primary web deliverable.
+- Legacy file-path photos from older builds will show as missing until re-picked.
+
+---
+
+## Why GoRouter + GetX
+
+- **GoRouter:** browser URL sync, back/forward, refresh-safe deep links — required for a serious web app.
+- **GetX:** keeps existing reactive controllers (`Obx`) and DI with minimal churn.
 
 ---
 

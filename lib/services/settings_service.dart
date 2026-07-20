@@ -68,16 +68,12 @@ class SettingsService extends GetxService {
 
   Future<void> setLocaleCode(String code, {bool markSelected = true}) async {
     await _box.put(_localeCodeKey, code);
-    localeCodeRx.value = code;
     if (markSelected) {
       await _box.put(_languageSelectedKey, true);
       languageSelectedRx.value = true;
     }
-    final locale = AppLocales.byStorageCode(code).locale;
-    // Only when a navigator exists (skip during bare unit-test setUp).
-    if (Get.key.currentState != null) {
-      Get.updateLocale(locale);
-    }
+    // Notify UI (SttApp listens via ever(localeCodeRx)).
+    localeCodeRx.value = code;
   }
 
   Future<void> markFabTutorialSeen() async {

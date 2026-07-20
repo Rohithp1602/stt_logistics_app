@@ -5,6 +5,7 @@ import '../../../core/enums/shipment_status.dart';
 import '../../../l10n/l10n.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_text_field.dart';
+import '../../../widgets/responsive_page.dart';
 import '../controllers/shipment_controller.dart';
 
 /// Create / edit form for a single shipment record.
@@ -25,9 +26,11 @@ class ShipmentFormView extends GetView<ShipmentController> {
       body: SafeArea(
         child: Form(
           key: controller.formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
+          child: ResponsivePage(
+            maxWidth: 640,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
               AppTextField(
                 controller: controller.customerController,
                 label: strings.customerName,
@@ -80,6 +83,7 @@ class ShipmentFormView extends GetView<ShipmentController> {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

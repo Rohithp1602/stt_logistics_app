@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 import '../../../core/errors/failures.dart';
 import '../../../core/enums/verification_status.dart';
@@ -14,6 +10,7 @@ import '../../../data/providers/driver_provider.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../l10n/l10n.dart';
 import '../../../services/auth_service.dart';
+import '../../../utils/photo_storage.dart';
 import '../../../utils/snackbar_helper.dart';
 
 /// Controller for the profile screen that handles user and driver data editing.
@@ -65,13 +62,16 @@ class ProfileController extends GetxController {
   void _populateFields() {
     final currentUser = user.value;
     final currentDriver = driver.value;
-    
+
     if (currentUser != null) {
-      fullNameController.text = currentUser.displayName ?? currentDriver?.name ?? '';
-      phoneController.text = currentUser.phone.isNotEmpty ? currentUser.phone : (currentDriver?.phone ?? '');
+      fullNameController.text =
+          currentUser.displayName ?? currentDriver?.name ?? '';
+      phoneController.text = currentUser.phone.isNotEmpty
+          ? currentUser.phone
+          : (currentDriver?.phone ?? '');
       photoPath.value = currentUser.photoPath ?? currentDriver?.photoPath;
     }
-    
+
     if (currentDriver != null) {
       cdlController.text = currentDriver.cdlNumber;
       hubController.text = currentDriver.hub;
@@ -135,32 +135,16 @@ class ProfileController extends GetxController {
       );
 
       if (image != null) {
-        photoPath.value = await _saveAvatar(image);
+        photoPath.value = await PhotoStorage.saveFromXFile(image);
       }
     } catch (e) {
       SnackbarHelper.error('Failed to select photo: ${e.toString()}');
     }
   }
 
-  Future<String> _saveAvatar(XFile image) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final avatarsDir = Directory(path.join(appDir.path, 'avatars'));
-    if (!await avatarsDir.exists()) {
-      await avatarsDir.create(recursive: true);
-    }
-
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final extension = path.extension(image.path);
-    final fileName = 'avatar_$timestamp$extension';
-    final savedPath = path.join(avatarsDir.path, fileName);
-
-    await File(image.path).copy(savedPath);
-    return savedPath;
-  }
-
   Future<void> saveProfile() async {
     if (isSaving.value) return;
-    
+
     isSaving.value = true;
     try {
       final currentUser = user.value;
@@ -169,7 +153,6 @@ class ProfileController extends GetxController {
         return;
       }
 
-      // Update profile via repository
       final updatedUser = await _authRepo.updateProfile(
         displayName: fullNameController.text.trim(),
         phone: phoneController.text.trim(),
@@ -178,7 +161,6 @@ class ProfileController extends GetxController {
         photoPath: photoPath.value,
       );
 
-      // Update driver data
       final updatedDriver = DriverModel(
         userId: currentUser.id,
         name: fullNameController.text.trim(),
@@ -188,10 +170,9 @@ class ProfileController extends GetxController {
         status: driver.value?.status ?? VerificationStatus.pending,
         photoPath: photoPath.value,
       );
-      
+
       await _driverProvider.saveDriver(updatedDriver);
 
-      // Update local state
       user.value = updatedUser;
       driver.value = updatedDriver;
 
@@ -204,5 +185,4 @@ class ProfileController extends GetxController {
       isSaving.value = false;
     }
   }
-
 }

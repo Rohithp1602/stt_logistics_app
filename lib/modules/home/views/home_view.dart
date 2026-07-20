@@ -218,18 +218,29 @@ class _EmptyDriverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          height: 140,
-          decoration: AppDecorations.card,
-          child: Center(
-            child: Text(
-              context.l10n.completeProfileForLicense,
-              style: const TextStyle(color: AppColors.textSecondary),
+    return Align(
+      alignment: Alignment.topCenter,
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: kDriverLicenseCardMaxWidth),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(14),
+            child: Ink(
+              height: 140,
+              decoration: AppDecorations.card,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    context.l10n.completeProfileForLicense,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.textSecondary),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

@@ -6,6 +6,7 @@ import '../../../core/errors/failures.dart';
 import '../../../core/validators/form_validators.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../l10n/l10n.dart';
+import '../../../routes/app_router.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/messaging_service.dart';
@@ -48,7 +49,7 @@ class LoginController extends GetxController {
       );
       await performance?.stopTrace(trace);
       await analytics?.logEvent(AnalyticsEvents.flowLoginSuccess);
-      Get.offAllNamed(AppRoutes.shell);
+      AppNavigation.go(AppRoutes.shell);
       SnackbarHelper.successAfterNav(l10n.loginSuccess);
       if (Get.isRegistered<MessagingService>()) {
         await Get.find<MessagingService>().handlePendingNavigation();

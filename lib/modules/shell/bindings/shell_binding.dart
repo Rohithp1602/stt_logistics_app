@@ -28,21 +28,37 @@ class ShellBinding extends Bindings {
       );
     }
 
-    Get.lazyPut<MainShellController>(MainShellController.new);
-    Get.lazyPut<HomeController>(HomeController.new);
+    if (!Get.isRegistered<MainShellController>()) {
+      Get.lazyPut<MainShellController>(MainShellController.new);
+    }
+    if (!Get.isRegistered<HomeController>()) {
+      Get.lazyPut<HomeController>(HomeController.new);
+    }
 
-    Get.lazyPut<ShipmentProvider>(ShipmentProvider.new, fenix: true);
-    Get.lazyPut<ShipmentRepository>(
-      () => ShipmentRepository(provider: Get.find<ShipmentProvider>()),
-      fenix: true,
-    );
-    Get.lazyPut<ShipmentController>(
-      () => ShipmentController(repository: Get.find<ShipmentRepository>()),
-      fenix: true,
-    );
+    if (!Get.isRegistered<ShipmentProvider>()) {
+      Get.lazyPut<ShipmentProvider>(ShipmentProvider.new, fenix: true);
+    }
+    if (!Get.isRegistered<ShipmentRepository>()) {
+      Get.lazyPut<ShipmentRepository>(
+        () => ShipmentRepository(provider: Get.find<ShipmentProvider>()),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<ShipmentController>()) {
+      Get.lazyPut<ShipmentController>(
+        () => ShipmentController(repository: Get.find<ShipmentRepository>()),
+        fenix: true,
+      );
+    }
 
-    Get.lazyPut<DriverProvider>(DriverProvider.new, fenix: true);
-    Get.lazyPut<ProfileController>(ProfileController.new, fenix: true);
-    Get.lazyPut<SettingsController>(SettingsController.new, fenix: true);
+    if (!Get.isRegistered<DriverProvider>()) {
+      Get.lazyPut<DriverProvider>(DriverProvider.new, fenix: true);
+    }
+    if (!Get.isRegistered<ProfileController>()) {
+      Get.lazyPut<ProfileController>(ProfileController.new, fenix: true);
+    }
+    if (!Get.isRegistered<SettingsController>()) {
+      Get.lazyPut<SettingsController>(SettingsController.new, fenix: true);
+    }
   }
 }
