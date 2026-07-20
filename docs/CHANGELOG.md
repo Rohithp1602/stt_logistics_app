@@ -19,3 +19,5 @@ First client build.
 - Package ID `com.sttlogistics.group`  
 - STT brand theme (navy / red)  
 - iOS screenshots in `docs/screenshots/` and overview PDF  
+- Live web demo: [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app) (screenshots in `docs/screenshots/web/`)  
+- README / ARCHITECTURE document GetX choice and Hosting URL  

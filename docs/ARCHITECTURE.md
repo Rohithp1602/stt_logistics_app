@@ -2,6 +2,13 @@
 
 Short reference for how the app is structured.
 
+**Live web demo:** [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app)  
+(Web-responsive Hosting build; screenshots in `docs/screenshots/web/`. Native product lives on `main`; web routing/layout on the `web` branch.)
+
+## Why GetX
+
+GetX was chosen for state management and dependency injection because it pairs reactive UI (`Obx` / `GetView`) with simple controller-based screen logic and a single place to register app-wide services. That reduces boilerplate versus combining a separate state library, DI container, and router for a multi-module driver app. Controllers remain thin and testable while repositories stay free to swap Hive for a remote API later.
+
 ## Layers
 
 ```text

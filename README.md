@@ -8,8 +8,27 @@ Built with **Flutter** and **GetX**. Business data is stored on-device with **Hi
 |---|---|
 | **Version** | 1.0.0+1 |
 | **Package ID** | `com.sttlogistics.group` |
-| **Platforms** | iOS · Android |
-| **Orientation** | Portrait |
+| **Platforms** | iOS · Android · Web (demo) |
+| **Orientation** | Portrait (native) |
+| **Live web** | [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app) |
+
+---
+
+## Live web demo
+
+A responsive Flutter Web build is hosted on Firebase Hosting:
+
+**URL:** [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app)
+
+Use it to review onboarding, language selection, sign-in, and registration in the browser. Web-specific routing and layout live on the `web` branch; this `main` branch remains the native (iOS / Android) product.
+
+### Web screenshots
+
+Captured from the live Hosting deploy.
+
+| Onboarding | Language | Sign in | Register |
+|:---:|:---:|:---:|:---:|
+| ![Web onboarding](docs/screenshots/web/01_onboarding.png) | ![Web language](docs/screenshots/web/02_language.png) | ![Web login](docs/screenshots/web/03_login.png) | ![Web register](docs/screenshots/web/04_register.png) |
 
 ---
 
@@ -138,7 +157,8 @@ lib/
   theme/                 Light theme
   widgets/               Shared UI (nav, fields, FAB tutorial, …)
 docs/
-  screenshots/           iOS captures used above
+  screenshots/           iOS captures
+  screenshots/web/       Live web Hosting captures
   ARCHITECTURE.md        Layering notes
   CHANGELOG.md           Release notes
   STT_Logistics_App_Overview.pdf
@@ -151,6 +171,10 @@ docs/
 ```text
 View → Controller → Repository → Provider / AuthApi → Hive
 ```
+
+### Why GetX
+
+GetX was chosen as the app’s state-management and DI layer because it keeps screen logic in small controllers with reactive `Obx` rebuilds, while also covering routing and service registration in one lightweight package. That fit a multi-module Flutter app (auth, shell, shipments, settings) without the boilerplate of wiring separate navigation, DI, and state libraries. Controllers stay easy to unit-test and swap when a real backend replaces the local Hive APIs.
 
 | Hive box | Contents |
 |----------|----------|
