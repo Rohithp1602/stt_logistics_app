@@ -20,5 +20,6 @@ First client build.
 - STT brand theme (navy / red)
 - iOS screenshots in `docs/screenshots/` and overview PDF
 - Live web demo: [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app) (screenshots in `docs/screenshots/web/`)
+- Android release APK on GitHub Releases: [stt-logistics-v1.0.0.apk](https://github.com/Rohithp1602/stt_logistics_app/releases/download/v1.0.0/stt-logistics-v1.0.0.apk)
 - README and ARCHITECTURE include GetX rationale and Hosting URL
-- README includes an Assumptions section for challenge submission
+- README includes an Assumptions section and app walkthrough for challenge submission

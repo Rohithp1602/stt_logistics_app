@@ -11,6 +11,32 @@ Stack: Flutter, GetX, Hive (local data), and Firebase (analytics, crash reportin
 | **Platforms** | iOS, Android, Web (demo) |
 | **Orientation** | Portrait on native |
 | **Live web** | [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app) |
+| **Android APK** | [Download v1.0.0](https://github.com/Rohithp1602/stt_logistics_app/releases/download/v1.0.0/stt-logistics-v1.0.0.apk) |
+
+---
+
+## Android APK
+
+A release APK is available for client review on a physical Android device or emulator.
+
+- **Download:** [stt-logistics-v1.0.0.apk](https://github.com/Rohithp1602/stt_logistics_app/releases/download/v1.0.0/stt-logistics-v1.0.0.apk)
+- **Release page:** [v1.0.0 on GitHub](https://github.com/Rohithp1602/stt_logistics_app/releases/tag/v1.0.0)
+- **Package ID:** `com.sttlogistics.group`
+
+### Install on Android
+
+1. Download the APK from the link above.
+2. Open the file on the device. If prompted, allow installs from this source.
+3. Install and open **STT Logistics**.
+4. Follow the walkthrough below (create an account first - no demo login is preloaded).
+
+To rebuild locally:
+
+```bash
+flutter build apk --release
+```
+
+Output: `build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
@@ -24,7 +50,7 @@ You can try onboarding, language selection, sign-in, and registration in the bro
 
 ### How to use the app (client walkthrough)
 
-Follow this flow on the live web demo or a local/emulator build. There is no pre-made demo account - create one first.
+Follow this flow on the Android APK, live web demo, or a local/emulator build. There is no pre-made demo account - create one first.
 
 1. **Onboarding** (first launch only)  
    Open the app. Swipe or tap through the two intro pages, then continue (or skip).
