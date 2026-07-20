@@ -22,6 +22,42 @@ Hosted on Firebase Hosting:
 
 You can try onboarding, language selection, sign-in, and registration in the browser. Web routing and layout are on the `web` branch. This `main` branch is the native iOS/Android product.
 
+### How to use the app (client walkthrough)
+
+Follow this flow on the live web demo or a local/emulator build. There is no pre-made demo account - create one first.
+
+1. **Onboarding** (first launch only)  
+   Open the app. Swipe or tap through the two intro pages, then continue (or skip).
+
+2. **Choose language** (first launch only)  
+   Pick a language and tap Continue. You can change this later in Settings.
+
+3. **Create account**  
+   On Sign in, tap **Register now**. Enter full name, email, password, confirm password, CDL number, and hub/depot. Profile photo is optional. Tap **Create account**.
+
+4. **Sign in** (next time)  
+   Use the same email and password. After a successful login, the session is kept so a refresh or app restart can restore you.
+
+5. **Home**  
+   See a welcome header, shipment overview chart, and a shortcut to the driver verification card.
+
+6. **Driver verification**  
+   Open the card from Home. Review name, CDL, hub, photo, and STT status (Verified / Pending / Rejected).
+
+7. **Create a shipment**  
+   Tap the center **+** button (or New shipment on wide web layout). Enter customer name, origin, and destination. Status defaults to Pending. Save. Origin and destination must be different.
+
+8. **Manage shipments**  
+   Open the Shipments tab. Edit a record, change status (Pending / In Transit / Delivered), or delete with confirmation. List updates right away.
+
+9. **Profile**  
+   Update name, phone, CDL, hub, or photo.
+
+10. **Settings**  
+    Toggle notifications, change language, open Privacy Policy / Terms, or log out.
+
+**Tip:** After logout, sign in again with the account you registered. Shipments stay tied to that user.
+
 ### Web screenshots
 
 From the live Hosting deploy.
