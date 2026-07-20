@@ -21,3 +21,5 @@ First client build.
 - iOS screenshots in `docs/screenshots/` and overview PDF  
 - Live web demo: [https://sst-logistics-app.web.app](https://sst-logistics-app.web.app) (screenshots in `docs/screenshots/web/`)  
 - README / ARCHITECTURE document GetX choice and Hosting URL  
+- README includes an explicit **Assumptions** section for challenge submission  
+

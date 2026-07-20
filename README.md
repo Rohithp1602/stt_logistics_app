@@ -189,13 +189,18 @@ Client PDF: [docs/STT_Logistics_App_Overview.pdf](docs/STT_Logistics_App_Overvie
 
 ---
 
-## Handover notes
+## Assumptions
 
-- Swap `AuthApi` / shipment providers when a backend is ready; screens can stay.
-- Brand assets: `assets/images/` and `assets/images/onboarding/`
-- Portrait only
+Documented for the challenge review:
+
+- **Auth is local mock** — email/password accounts live in Hive (`HiveAuthApi`), not Firebase Auth or a remote API. Suitable for demo / assessment; swap `AuthApi` when a backend is ready (screens can stay).
+- **Shipments and driver data are on-device** — persisted in Hive boxes; no live database required by the brief.
+- **Native product is portrait-only** — iOS / Android lock to portrait. The optional web demo is responsive and lives on the `web` branch / Firebase Hosting.
+- **Brand assets** — logos and onboarding art are under `assets/images/` and `assets/images/onboarding/`.
+- **Extra features beyond the PDF** — onboarding, 15 locales, Firebase Analytics/Crashlytics/FCM, and the hosted web build are intentional additions, not challenge blockers.
 
 ---
+
 
 ## License
 
