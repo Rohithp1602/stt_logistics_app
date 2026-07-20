@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "10162701933",
+    "project_id": "sst-logistics-app",
+    "storage_bucket": "sst-logistics-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10162701933:android:2aaff051401f560018a164",
+        "android_client_info": {
+          "package_name": "com.sttlogistics.group"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhbqEzKm7hGsiMzKwASe83F_fVxRqaGqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
